@@ -123,35 +123,52 @@ namespace KeeStats
 				return;
 			}
 			
-			PwGroup pg = m_host.MainWindow.GetSelectedGroup();
-			Debug.Assert(pg != null); if (pg == null) return;
-			ComputeStats(pg);
+			PwGroup theGroup = m_host.MainWindow.GetSelectedGroup();
+			Debug.Assert(theGroup != null); if (theGroup == null) return;
+			ComputeStats(theGroup);
 		}
 		
 		/// <summary>
 		/// Computes the statistics
 		/// </summary>
-		/// <param name="iGroup">The group on which to calculate the statistics</param>
-		private void ComputeStats(PwGroup iGroup)
+		/// <param name="group">The group on which to calculate the statistics</param>
+		private void ComputeStats(PwGroup group)
 		{
 			// number of groups
 			// number of password
 			// number of unique passowords
-			// average length for unique passwords
+			// average length for unique passwords + distribution
+			// most common?
+			// including only numbers, alpha, uppercase, special chars
 			// Lenght of longest
 			// Length of shortest
 			// Average of last access
-			List<StatItem> aList = new List<StatItem>();
-			aList.Add(new StatItem("Count", iGroup.GetEntriesCount(false)));
-			aList.Add(new StatItem("Count (all)", iGroup.GetEntriesCount(true)));
-			aList.Add(new StatItem("Number of groups", iGroup.GetGroups(false).UCount));
-			aList.Add(new StatItem("Number of groups (all)", iGroup.GetGroups(true).UCount));
+			float totalNumber = group.GetEntriesCount(true);
+			
+			if (totalNumber == 0) {
+				MessageBox.Show("No passwords in this group", "KeeStats", MessageBoxButtons.OK, MessageBoxIcon.Information);
+			}
+			
+			List<StatItem> statsList = new List<StatItem>();
+			statsList.Add(new StatItem("Count", group.GetEntriesCount(false)));
+			statsList.Add(new StatItem("Count (all)", group.GetEntriesCount(true)));
+			statsList.Add(new StatItem("Number of groups", group.GetGroups(false).UCount));
+			statsList.Add(new StatItem("Number of groups (all)", group.GetGroups(true).UCount));
 			
 			// HashSet
+			Dictionary<string, PwEntry> passwords = new Dictionary<string, PwEntry>();
+			foreach (PwEntry aPassword in group.GetEntries(true)) {
+				try {
+					passwords.Add(aPassword.Strings.ReadSafe(PwDefs.PasswordField), aPassword);
+				} catch(ArgumentException)
+				{}
+			}
+			
+			statsList.Add(new StatItem("Unique pwds", passwords.Count));
+			statsList.Add(new StatItem("% of unique pwds", (passwords.Count/totalNumber)*100));
 			
 			// Show the window
-			StatsSummaryWindow theWindow = new StatsSummaryWindow(aList);
-
+			StatsSummaryWindow theWindow = new StatsSummaryWindow(statsList);
 			theWindow.Show();
 		}
 

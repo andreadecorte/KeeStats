@@ -28,14 +28,14 @@ namespace KeeStats
 	/// </summary>
 	public partial class StatsSummaryWindow : Form
 	{
-		public StatsSummaryWindow(List<StatItem> iItems)
+		public StatsSummaryWindow(List<StatItem> items)
 		{
 			//
 			// The InitializeComponent() call is required for Windows Forms designer support.
 			//
 			InitializeComponent();
 
-			m_statsView.DataSource = iItems;
+			m_statsView.DataSource = items;
 			m_statsView.ReadOnly = true;
 			
 			//
