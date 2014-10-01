@@ -18,6 +18,10 @@
  */
 using System;
 
+using KeePass.Plugins;
+using KeePass.Forms;
+using KeePassLib;
+
 namespace KeeStats
 {
 	/// <summary>
@@ -36,5 +40,19 @@ namespace KeeStats
 		public float _value;
 		public float Value { get { return _value; } set { _value = value; } }
 		
+	}
+	
+	/// <summary>
+	/// This class stores also a reference to a single password entry
+	/// </summary>
+	public class ExtendedStatItem : StatItem
+	{
+		public ExtendedStatItem(string name, float value, PwEntry item) : base(name, value)
+		{
+			_item = item;
+		}
+		
+		public PwEntry _item;
+		public PwEntry Item { get { return _item; } set { _item = value; } }		
 	}
 }

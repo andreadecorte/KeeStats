@@ -27,7 +27,6 @@ using KeePass.Forms;
 using KeePass.Resources;
 
 using KeePassLib;
-using KeePassLib.Security;
 
 namespace KeeStats
 {
@@ -127,7 +126,7 @@ namespace KeeStats
 			Debug.Assert(theGroup != null); if (theGroup == null) return;
 			ComputeStats(theGroup);
 		}
-		
+
 		/// <summary>
 		/// Computes the statistics
 		/// </summary>
@@ -142,9 +141,10 @@ namespace KeeStats
 			// including only numbers, alpha, uppercase, special chars
 			// Lenght of longest
 			// Length of shortest
-			// Average of last access
+			// Average of last access ?
 			float totalNumber = group.GetEntriesCount(true);
 			
+			// TODO add checkbox for recursive -> move compute
 			if (totalNumber == 0) {
 				MessageBox.Show("No passwords in this group", "KeeStats", MessageBoxButtons.OK, MessageBoxIcon.Information);
 			}
@@ -156,19 +156,55 @@ namespace KeeStats
 			statsList.Add(new StatItem("Number of groups (all)", group.GetGroups(true).UCount));
 			
 			// HashSet
+			int shortestLength = 1000;
+			string shortestPass = "";
+			PwEntry shortestEntry = null;
+			int longestLength = 0;
+			string longestPass = "";
+			PwEntry longestEntry = null;
+			
+			int emptyPasswords = 0;
+			
 			Dictionary<string, PwEntry> passwords = new Dictionary<string, PwEntry>();
-			foreach (PwEntry aPassword in group.GetEntries(true)) {
+			foreach (PwEntry aPasswordObject in group.GetEntries(true)) {
 				try {
-					passwords.Add(aPassword.Strings.ReadSafe(PwDefs.PasswordField), aPassword);
-				} catch(ArgumentException)
-				{}
+					string thePasswordString = aPasswordObject.Strings.ReadSafe(PwDefs.PasswordField);
+					int thePasswordStringLength = thePasswordString.Length;
+					// special case for empty passwords
+					if (thePasswordStringLength == 0) {
+						emptyPasswords++;
+						continue;
+					}
+					
+					passwords.Add(thePasswordString, aPasswordObject);
+					if (thePasswordStringLength < shortestLength) {
+						shortestPass = thePasswordString;
+						shortestLength = thePasswordStringLength;
+						shortestEntry = aPasswordObject;
+					} 
+					if (thePasswordStringLength > longestLength) {
+						longestPass = thePasswordString;
+						longestLength = thePasswordStringLength;
+						longestEntry = aPasswordObject;
+					}				
+					
+				} catch(ArgumentException) {
+					// We want only unique passwords, so don't do anything
+				}
 			}
 			
+			statsList.Add(new StatItem("Empty passwords", emptyPasswords));
+		
 			statsList.Add(new StatItem("Unique pwds", passwords.Count));
 			statsList.Add(new StatItem("% of unique pwds", (passwords.Count/totalNumber)*100));
 			
+			List<ExtendedStatItem> statsList2 = new List<ExtendedStatItem>();
+			statsList2.Add(new ExtendedStatItem("Shortest password", shortestLength, shortestEntry));
+			statsList2.Add(new ExtendedStatItem("Longest password", longestLength, longestEntry));
+			
 			// Show the window
-			StatsSummaryWindow theWindow = new StatsSummaryWindow(statsList);
+			StatsSummaryWindow theWindow = new StatsSummaryWindow(statsList, statsList2);
+			theWindow.Database = m_host.Database;
 			theWindow.Show();
 		}
 

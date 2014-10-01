@@ -17,7 +17,8 @@ namespace KeeStats
 		private System.Windows.Forms.TabControl tabControl;
 		private System.Windows.Forms.TabPage tabGeneral;
 		private System.Windows.Forms.TabPage tabQuality;
-		private System.Windows.Forms.DataGridView m_statsView;
+		private System.Windows.Forms.DataGridView generalStatsView;
+		private System.Windows.Forms.DataGridView qualityStatsView;
 		
 		/// <summary>
 		/// Disposes resources used by the form.
@@ -42,11 +43,14 @@ namespace KeeStats
 		{
 			this.tabControl = new System.Windows.Forms.TabControl();
 			this.tabGeneral = new System.Windows.Forms.TabPage();
-			this.m_statsView = new System.Windows.Forms.DataGridView();
+			this.generalStatsView = new System.Windows.Forms.DataGridView();
 			this.tabQuality = new System.Windows.Forms.TabPage();
+			this.qualityStatsView = new System.Windows.Forms.DataGridView();
 			this.tabControl.SuspendLayout();
 			this.tabGeneral.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.m_statsView)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.generalStatsView)).BeginInit();
+			this.tabQuality.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.qualityStatsView)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// tabControl
@@ -64,7 +68,7 @@ namespace KeeStats
 			// 
 			// tabGeneral
 			// 
-			this.tabGeneral.Controls.Add(this.m_statsView);
+			this.tabGeneral.Controls.Add(this.generalStatsView);
 			this.tabGeneral.Location = new System.Drawing.Point(4, 22);
 			this.tabGeneral.Name = "tabGeneral";
 			this.tabGeneral.Padding = new System.Windows.Forms.Padding(3);
@@ -73,29 +77,42 @@ namespace KeeStats
 			this.tabGeneral.Text = "General Stats";
 			this.tabGeneral.UseVisualStyleBackColor = true;
 			// 
-			// m_statsView
+			// generalStatsView
 			// 
-			this.m_statsView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+			this.generalStatsView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
 			| System.Windows.Forms.AnchorStyles.Left) 
 			| System.Windows.Forms.AnchorStyles.Right)));
-			this.m_statsView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-			this.m_statsView.GridColor = System.Drawing.SystemColors.ActiveCaption;
-			this.m_statsView.Location = new System.Drawing.Point(3, 3);
-			this.m_statsView.Name = "m_statsView";
-			this.m_statsView.RowHeadersVisible = false;
-			this.m_statsView.ShowEditingIcon = false;
-			this.m_statsView.Size = new System.Drawing.Size(270, 228);
-			this.m_statsView.TabIndex = 0;
+			this.generalStatsView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+			this.generalStatsView.GridColor = System.Drawing.SystemColors.ActiveCaption;
+			this.generalStatsView.Location = new System.Drawing.Point(3, 3);
+			this.generalStatsView.Name = "generalStatsView";
+			this.generalStatsView.RowHeadersVisible = false;
+			this.generalStatsView.ShowEditingIcon = false;
+			this.generalStatsView.Size = new System.Drawing.Size(270, 228);
+			this.generalStatsView.TabIndex = 0;
 			// 
 			// tabQuality
 			// 
+			this.tabQuality.Controls.Add(this.qualityStatsView);
 			this.tabQuality.Location = new System.Drawing.Point(4, 22);
 			this.tabQuality.Name = "tabQuality";
 			this.tabQuality.Padding = new System.Windows.Forms.Padding(3);
-			this.tabQuality.Size = new System.Drawing.Size(287, 234);
+			this.tabQuality.Size = new System.Drawing.Size(276, 234);
 			this.tabQuality.TabIndex = 1;
 			this.tabQuality.Text = "Quality Stats";
 			this.tabQuality.UseVisualStyleBackColor = true;
+			// 
+			// qualityStatsView
+			// 
+			this.qualityStatsView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+			this.qualityStatsView.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.qualityStatsView.GridColor = System.Drawing.SystemColors.ActiveCaption;
+			this.qualityStatsView.Location = new System.Drawing.Point(3, 3);
+			this.qualityStatsView.Name = "qualityStatsView";
+			this.qualityStatsView.RowHeadersVisible = false;
+			this.qualityStatsView.ShowEditingIcon = false;
+			this.qualityStatsView.Size = new System.Drawing.Size(270, 228);
+			this.qualityStatsView.TabIndex = 0;
 			// 
 			// StatsSummaryWindow
 			// 
@@ -107,7 +124,9 @@ namespace KeeStats
 			this.Text = "KeeStats";
 			this.tabControl.ResumeLayout(false);
 			this.tabGeneral.ResumeLayout(false);
-			((System.ComponentModel.ISupportInitialize)(this.m_statsView)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.generalStatsView)).EndInit();
+			this.tabQuality.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.qualityStatsView)).EndInit();
 			this.ResumeLayout(false);
 
 		}

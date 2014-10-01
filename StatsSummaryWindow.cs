@@ -21,6 +21,9 @@ using System.Windows.Forms;
 
 using System.Collections.Generic;
 
+using KeePassLib;
+using KeePass.Forms;
+
 namespace KeeStats
 {
 	/// <summary>
@@ -28,19 +31,60 @@ namespace KeeStats
 	/// </summary>
 	public partial class StatsSummaryWindow : Form
 	{
-		public StatsSummaryWindow(List<StatItem> items)
+		private PwDatabase _database = null;
+		public PwDatabase Database { get { return _database; } set { _database = value; } }
+		
+		public StatsSummaryWindow(List<StatItem> items, List<ExtendedStatItem> extended_items)
 		{
 			//
 			// The InitializeComponent() call is required for Windows Forms designer support.
 			//
 			InitializeComponent();
+			//TODO add group name in window title
+			//this.Text += groupName;
 
-			m_statsView.DataSource = items;
-			m_statsView.ReadOnly = true;
+			generalStatsView.DataSource = items;
+			generalStatsView.ReadOnly = true;
 			
-			//
-			// TODO: Add constructor code after the InitializeComponent() call.
-			//
+			qualityStatsView.DataSource = extended_items;
+			qualityStatsView.ReadOnly = true;
+			
+			// Hide item object column
+			qualityStatsView.Columns["Item"].Visible = false;
+			qualityStatsView.CellClick += new DataGridViewCellEventHandler(qualityStatsView_CellClick);
+//			DataGridViewButtonColumn btn = new DataGridViewButtonColumn();
+//			m_statsView2.Columns.Add(btn);
+//			btn.HeaderText = "Click Data";
+//			btn.Text = "Click Here";
+//			btn.Name = "btn";
+//			btn.UseColumnTextForButtonValue = true;
+
+		}
+		
+		private void qualityStatsView_CellClick(object sender, DataGridViewCellEventArgs e)
+		{
+			if (e.ColumnIndex !=  qualityStatsView.Rows[e.RowIndex].Cells["Value"].ColumnIndex)
+			{
+				// only show if we're clicking on Value cell
+				return;
+			}
+			
+			if (_database == null) {
+				// we need the database to show the edit window
+				return;
+			}
+
+			PwEntry entry = qualityStatsView.Rows[e.RowIndex].Cells["Item"].Value as PwEntry;
+			
+			try {
+				PwEntryForm aForm = new PwEntryForm();
+				aForm.InitEx(entry, PwEditMode.ViewReadOnlyEntry, _database, new ImageList(), false, false);
+				aForm.Show();
+			} catch (Exception ex) {
+				MessageBox.Show("Error while loading the edit window " + ex.Message, "KeeStats", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+
+			// TODO fix the Cancel button not working despite adding the event
 		}
 	}
 }
