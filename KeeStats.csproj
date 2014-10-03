@@ -50,6 +50,7 @@
   <ItemGroup>
     <Compile Include="KeeStatsExt.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StatComputer.cs" />
     <Compile Include="StatItem.cs" />
     <Compile Include="StatsSummaryWindow.cs" />
     <Compile Include="StatsSummaryWindow.Designer.cs">

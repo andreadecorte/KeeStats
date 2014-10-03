@@ -77,7 +77,7 @@ namespace KeeStats
 			m_tsSeparator2 = new ToolStripSeparator();
 			contextMenu.Items.Add(m_tsSeparator2);
 			m_GroupStats = new ToolStripMenuItem();
-			m_GroupStats.Text = "View stats for this group";
+			m_GroupStats.Text = "View stats for this group...";
 			m_GroupStats.Click += OnMenuGroupStats;
 			contextMenu.Items.Add(m_GroupStats);
 
@@ -133,78 +133,21 @@ namespace KeeStats
 		/// <param name="group">The group on which to calculate the statistics</param>
 		private void ComputeStats(PwGroup group)
 		{
-			// number of groups
-			// number of password
-			// number of unique passowords
-			// average length for unique passwords + distribution
-			// most common?
-			// including only numbers, alpha, uppercase, special chars
-			// Lenght of longest
-			// Length of shortest
-			// Average of last access ?
-			float totalNumber = group.GetEntriesCount(true);
-			
-			// TODO add checkbox for recursive -> move compute
-			if (totalNumber == 0) {
-				MessageBox.Show("No passwords in this group", "KeeStats", MessageBoxButtons.OK, MessageBoxIcon.Information);
-			}
-			
 			List<StatItem> statsList = new List<StatItem>();
-			statsList.Add(new StatItem("Count", group.GetEntriesCount(false)));
-			statsList.Add(new StatItem("Count (all)", group.GetEntriesCount(true)));
-			statsList.Add(new StatItem("Number of groups", group.GetGroups(false).UCount));
-			statsList.Add(new StatItem("Number of groups (all)", group.GetGroups(true).UCount));
-			
-			// HashSet
-			int shortestLength = 1000;
-			string shortestPass = "";
-			PwEntry shortestEntry = null;
-			int longestLength = 0;
-			string longestPass = "";
-			PwEntry longestEntry = null;
-			
-			int emptyPasswords = 0;
-			
-			Dictionary<string, PwEntry> passwords = new Dictionary<string, PwEntry>();
-			foreach (PwEntry aPasswordObject in group.GetEntries(true)) {
-				try {
-					string thePasswordString = aPasswordObject.Strings.ReadSafe(PwDefs.PasswordField);
-					int thePasswordStringLength = thePasswordString.Length;
-					// special case for empty passwords
-					if (thePasswordStringLength == 0) {
-						emptyPasswords++;
-						continue;
-					}
-					
-					passwords.Add(thePasswordString, aPasswordObject);
-					if (thePasswordStringLength < shortestLength) {
-						shortestPass = thePasswordString;
-						shortestLength = thePasswordStringLength;
-						shortestEntry = aPasswordObject;
-					} 
-					if (thePasswordStringLength > longestLength) {
-						longestPass = thePasswordString;
-						longestLength = thePasswordStringLength;
-						longestEntry = aPasswordObject;
-					}				
-					
-				} catch(ArgumentException) {
-					// We want only unique passwords, so don't do anything
-				}
-			}
-			
-			statsList.Add(new StatItem("Empty passwords", emptyPasswords));
-		
-			statsList.Add(new StatItem("Unique pwds", passwords.Count));
-			statsList.Add(new StatItem("% of unique pwds", (passwords.Count/totalNumber)*100));
-			
 			List<ExtendedStatItem> statsList2 = new List<ExtendedStatItem>();
-			statsList2.Add(new ExtendedStatItem("Shortest password", shortestLength, shortestEntry));
-			statsList2.Add(new ExtendedStatItem("Longest password", longestLength, longestEntry));
+			
+			// By default is recursive
+			if (!StatComputer.ComputeStats(group, ref statsList, ref statsList2, true)) {
+				// exit if no password
+				return;
+			}
 			
 			// Show the window
 			StatsSummaryWindow theWindow = new StatsSummaryWindow(statsList, statsList2);
 			theWindow.Database = m_host.Database;
+			theWindow.Group = group;
+			// We need the icons for the Edit Entry Form
+			theWindow.Icons = m_host.MainWindow.ClientIcons;
 			theWindow.Show();
 		}
 

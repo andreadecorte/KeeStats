@@ -34,14 +34,24 @@ namespace KeeStats
 		private PwDatabase _database = null;
 		public PwDatabase Database { get { return _database; } set { _database = value; } }
 		
+		private PwGroup _group = null;
+		public PwGroup Group { get { return _group; } set
+			{ _group = value;
+				// add group name in window title
+				this.Text += " for group: ";
+				this.Text += _group.Name;
+			} }
+		
+		private ImageList _icons = null;
+		public ImageList Icons { get { return _icons; } set { _icons = value; } }
+
+		
 		public StatsSummaryWindow(List<StatItem> items, List<ExtendedStatItem> extended_items)
 		{
 			//
 			// The InitializeComponent() call is required for Windows Forms designer support.
 			//
 			InitializeComponent();
-			//TODO add group name in window title
-			//this.Text += groupName;
 
 			generalStatsView.DataSource = items;
 			generalStatsView.ReadOnly = true;
@@ -58,6 +68,9 @@ namespace KeeStats
 //			btn.Text = "Click Here";
 //			btn.Name = "btn";
 //			btn.UseColumnTextForButtonValue = true;
+			
+			recursiveSearch.Checked = true;
+			recursiveSearch.CheckedChanged += HandleCheckedChanged;
 
 		}
 		
@@ -73,18 +86,36 @@ namespace KeeStats
 				// we need the database to show the edit window
 				return;
 			}
+			
+			if (_icons == null) {
+				return;
+			}
 
 			PwEntry entry = qualityStatsView.Rows[e.RowIndex].Cells["Item"].Value as PwEntry;
 			
 			try {
 				PwEntryForm aForm = new PwEntryForm();
-				aForm.InitEx(entry, PwEditMode.ViewReadOnlyEntry, _database, new ImageList(), false, false);
+				aForm.InitEx(entry, PwEditMode.ViewReadOnlyEntry, _database, _icons, false, false);
 				aForm.Show();
 			} catch (Exception ex) {
 				MessageBox.Show("Error while loading the edit window " + ex.Message, "KeeStats", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 
 			// TODO fix the Cancel button not working despite adding the event
+		}
+
+		void HandleCheckedChanged(object sender, EventArgs e)
+		{
+			CheckBox cb = sender as CheckBox;
+			List<StatItem> items = new List<StatItem>();
+			List<ExtendedStatItem> extended_items = new List<ExtendedStatItem>();
+			
+			// Recompute stats
+			StatComputer.ComputeStats(_group, ref items, ref extended_items, cb.Checked);
+			
+			// Now update the data source so the view is updated
+			generalStatsView.DataSource = items;
+			qualityStatsView.DataSource = extended_items;
 		}
 	}
 }

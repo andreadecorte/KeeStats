@@ -23,7 +23,7 @@ using System.Runtime.InteropServices;
 
 // General assembly properties
 [assembly: AssemblyTitle("KeeStats")]
-[assembly: AssemblyDescription("A plugin which gives a bunch of statistics on your passwords.")]
+[assembly: AssemblyDescription("A plugin which produces a bunch of statistics on your passwords.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Andrea Decorte")]
 [assembly: AssemblyProduct("KeePass Plugin")]
