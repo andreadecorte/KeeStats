@@ -18,14 +18,13 @@
  */
 using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
 
 using KeePassLib;
 
 namespace KeeStats
 {
 	/// <summary>
-	/// Description of StatComputer.
+	/// A static class which takes care of statistic computation process
 	/// </summary>
 	public static class StatComputer
 	{
@@ -48,11 +47,9 @@ namespace KeeStats
 			// Lenght of longest
 			// Length of shortest
 			// Average of last access ?
-			float totalNumber = group.GetEntriesCount(isRecursive);
+			uint totalNumber = group.GetEntriesCount(isRecursive);
 			
-			// TODO add checkbox for recursive -> move compute
 			if (totalNumber == 0) {
-				MessageBox.Show("No passwords in this group", "KeeStats", MessageBoxButtons.OK, MessageBoxIcon.Information);
 				return false;
 			}
 			
@@ -94,16 +91,19 @@ namespace KeeStats
 					
 				} catch(ArgumentException) {
 					// We want only unique passwords, so don't do anything
+					// Code coverage ignores this for some reason...
 				}
 			}
 			
 			genericStats.Add(new StatItem("Empty passwords", emptyPasswords));
 			genericStats.Add(new StatItem("Unique pwds", passwords.Count));
-			genericStats.Add(new StatItem("% of unique pwds", (passwords.Count/totalNumber)*100));
+			genericStats.Add(new StatItem("% of unique pwds", (passwords.Count/(float) totalNumber)*100));
 			
-
-			qualityStats.Add(new ExtendedStatItem("Shortest password", shortestLength, shortestEntry));
-			qualityStats.Add(new ExtendedStatItem("Longest password", longestLength, longestEntry));
+			// if 0, we didn't see have any password
+			if (longestLength > 0) {
+				qualityStats.Add(new ExtendedStatItem("Shortest password", shortestLength, shortestEntry));
+				qualityStats.Add(new ExtendedStatItem("Longest password", longestLength, longestEntry));
+			}
 			
 			return true;
 		}

@@ -17,6 +17,7 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 using System;
+using System.Diagnostics;
 using System.Windows.Forms;
 
 using System.Collections.Generic;
@@ -59,6 +60,9 @@ namespace KeeStats
 			qualityStatsView.DataSource = extended_items;
 			qualityStatsView.ReadOnly = true;
 			
+			// Disable if no items
+			qualityStatsView.Enabled = extended_items.Count != 0;
+			
 			// Hide item object column
 			qualityStatsView.Columns["Item"].Visible = false;
 			qualityStatsView.CellClick += new DataGridViewCellEventHandler(qualityStatsView_CellClick);
@@ -71,7 +75,6 @@ namespace KeeStats
 			
 			recursiveSearch.Checked = true;
 			recursiveSearch.CheckedChanged += HandleCheckedChanged;
-
 		}
 		
 		private void qualityStatsView_CellClick(object sender, DataGridViewCellEventArgs e)
@@ -110,12 +113,16 @@ namespace KeeStats
 			List<StatItem> items = new List<StatItem>();
 			List<ExtendedStatItem> extended_items = new List<ExtendedStatItem>();
 			
-			// Recompute stats
-			StatComputer.ComputeStats(_group, ref items, ref extended_items, cb.Checked);
+			// Recompute stats. This should always be true (because otherwise the window wouldn't be opened)
+			var result = StatComputer.ComputeStats(_group, ref items, ref extended_items, cb.Checked);
+			Debug.Assert(result);
 			
 			// Now update the data source so the view is updated
 			generalStatsView.DataSource = items;
 			qualityStatsView.DataSource = extended_items;
+			
+			// Disable if no items
+			qualityStatsView.Enabled = extended_items.Count != 0;
 		}
 	}
 }

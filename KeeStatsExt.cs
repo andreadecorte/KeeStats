@@ -23,8 +23,6 @@ using System.Diagnostics;
 using System.Windows.Forms;
 
 using KeePass.Plugins;
-using KeePass.Forms;
-using KeePass.Resources;
 
 using KeePassLib;
 
@@ -134,16 +132,17 @@ namespace KeeStats
 		private void ComputeStats(PwGroup group)
 		{
 			List<StatItem> statsList = new List<StatItem>();
-			List<ExtendedStatItem> statsList2 = new List<ExtendedStatItem>();
+			List<ExtendedStatItem> extended_stats = new List<ExtendedStatItem>();
 			
 			// By default is recursive
-			if (!StatComputer.ComputeStats(group, ref statsList, ref statsList2, true)) {
+			if (!StatComputer.ComputeStats(group, ref statsList, ref extended_stats, true)) {
 				// exit if no password
+				MessageBox.Show("No passwords in this group", "KeeStats", MessageBoxButtons.OK, MessageBoxIcon.Information);
 				return;
 			}
 			
 			// Show the window
-			StatsSummaryWindow theWindow = new StatsSummaryWindow(statsList, statsList2);
+			StatsSummaryWindow theWindow = new StatsSummaryWindow(statsList, extended_stats);
 			theWindow.Database = m_host.Database;
 			theWindow.Group = group;
 			// We need the icons for the Edit Entry Form

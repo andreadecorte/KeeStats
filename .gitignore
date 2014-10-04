@@ -173,6 +173,11 @@ UpgradeLog*.htm
 # Microsoft Fakes
 FakesAssemblies/
 
+# Code coverage
+OpenCover/
+*.csproj.sdsettings
+*.OpenCover.Settings
+
 # =========================
 # Operating System Files
 # =========================
@@ -212,3 +217,4 @@ $RECYCLE.BIN/
 *.msi
 *.msm
 *.msp
+
