@@ -155,8 +155,7 @@ namespace KeeStats
 		{
 			get
 			{
-				//TODO add file
-				return "";
+				return "https://github.com/klenje/KeeStats/blob/master/version.txt";
 			}
 		}
 	}
