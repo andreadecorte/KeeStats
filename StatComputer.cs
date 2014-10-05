@@ -38,14 +38,9 @@ namespace KeeStats
 		/// <returns>False if there are no password in the selected group</returns>
 		public static bool ComputeStats(PwGroup group, ref List<StatItem> genericStats, ref List<ExtendedStatItem> qualityStats, bool isRecursive)
 		{
-			// number of groups
-			// number of password
-			// number of unique passowords
 			// average length for unique passwords + distribution
 			// most common?
 			// including only numbers, alpha, uppercase, special chars
-			// Lenght of longest
-			// Length of shortest
 			// Average of last access ?
 			uint totalNumber = group.GetEntriesCount(isRecursive);
 			
@@ -65,6 +60,7 @@ namespace KeeStats
 			PwEntry longestEntry = null;
 			
 			int emptyPasswords = 0;
+			int totalLength = 0;
 			
 			Dictionary<string, PwEntry> passwords = new Dictionary<string, PwEntry>();
 			foreach (PwEntry aPasswordObject in group.GetEntries(isRecursive)) {
@@ -89,6 +85,8 @@ namespace KeeStats
 						longestEntry = aPasswordObject;
 					}
 					
+					totalLength += thePasswordStringLength;
+					
 				} catch(ArgumentException) {
 					// We want only unique passwords, so don't do anything
 					// Code coverage ignores this for some reason...
@@ -98,6 +96,7 @@ namespace KeeStats
 			genericStats.Add(new StatItem("Empty passwords", emptyPasswords));
 			genericStats.Add(new StatItem("Unique pwds", passwords.Count));
 			genericStats.Add(new StatItem("% of unique pwds", (passwords.Count/(float) totalNumber)*100));
+			genericStats.Add(new StatItem("Average length", (totalLength / (float) passwords.Count)));
 			
 			// if 0, we didn't see have any password
 			if (longestLength > 0) {

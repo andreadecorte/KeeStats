@@ -65,8 +65,8 @@ namespace KeeStats.test
 			foreach (PwGroup pwgroup in list) {
 				if (pwgroup.Name == "Internet") {
 					StatComputer.ComputeStats(pwgroup, ref statsList, ref qualityStats, true);
-					Assert.AreEqual(5, statsList.Count);
-					Assert.IsTrue(statsList[0].Name == "Count");
+					Assert.AreEqual(6, statsList.Count);
+					Assert.AreEqual("Count", statsList[0].Name);
 					Assert.AreEqual(1, statsList[3].Value);  // unique pwds
 					
 					// Shortest and longest is 20
@@ -112,11 +112,11 @@ namespace KeeStats.test
 					bool result = StatComputer.ComputeStats(pwgroup, ref statsList, ref qualityStats, true);
 					Assert.IsTrue(result);
 					
-					Assert.AreEqual(5, statsList.Count);
+					Assert.AreEqual(6, statsList.Count);
 					// only an empty password
 					Assert.AreEqual(0, qualityStats.Count);
 					
-					Assert.IsTrue(statsList[3].Name == "Unique pwds");
+					Assert.AreEqual("Unique pwds", statsList[3].Name);
 					Assert.AreEqual(0, statsList[3].Value);  // unique pwds
 					Assert.AreEqual(1, statsList[2].Value);  // empty pwds
 				}
@@ -141,17 +141,20 @@ namespace KeeStats.test
 					Assert.AreEqual(5, statsList.Count);
 					Assert.AreEqual(2, qualityStats.Count);
 					
-					Assert.IsTrue(statsList[0].Name == "Count");
+					Assert.AreEqual("Count", statsList[0].Name);
 					Assert.AreEqual(3, statsList[0].Value);
 					
-					Assert.IsTrue(statsList[3].Name == "Unique pwds");
+					Assert.AreEqual("Unique pwds", statsList[3].Name);
 					Assert.AreEqual(2, statsList[3].Value);  // unique pwds
 					Assert.AreEqual(0, statsList[2].Value);  // empty pwds
 					
-					Assert.IsTrue(statsList[3].Name == "Shortest password");
+					Assert.AreEqual("Average length", statsList[5].Name);  // empty pwds
+					Assert.AreEqual(3.5, statsList[5].Value);  // empty pwds
+					
+					Assert.AreEqual("Shortest password", qualityStats[0].Name);
 					Assert.AreEqual(3, qualityStats[0].Value);
 					
-					Assert.IsTrue(statsList[3].Name == "Longest password");
+					Assert.AreEqual("Longest password", qualityStats[1].Name);
 					Assert.AreEqual(4, qualityStats[1].Value);
 				}
 			}

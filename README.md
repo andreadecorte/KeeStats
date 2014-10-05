@@ -19,6 +19,7 @@ The current list, I'm still adding them, please contact me if you have something
 * number of groups
 * empty passwords
 * unique passwords
+* average length for unique passwords
 
 Quality stats:
 * shortest password
