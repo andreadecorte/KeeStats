@@ -20,6 +20,7 @@ The current list, I'm still adding them, please contact me if you have something
 * empty passwords
 * unique passwords
 * average length for unique passwords
+* Number of entries with a filled URL field
 
 Quality stats:
 * shortest password

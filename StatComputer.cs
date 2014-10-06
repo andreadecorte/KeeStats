@@ -61,10 +61,16 @@ namespace KeeStats
 			
 			int emptyPasswords = 0;
 			int totalLength = 0;
+			int entriesWithURL = 0;
 			
 			Dictionary<string, PwEntry> passwords = new Dictionary<string, PwEntry>();
 			foreach (PwEntry aPasswordObject in group.GetEntries(isRecursive)) {
 				try {
+					
+					if (aPasswordObject.Strings.ReadSafe(PwDefs.UrlField).Length > 0) {
+						entriesWithURL++;
+					}
+					
 					string thePasswordString = aPasswordObject.Strings.ReadSafe(PwDefs.PasswordField);
 					int thePasswordStringLength = thePasswordString.Length;
 					// special case for empty passwords
@@ -97,8 +103,9 @@ namespace KeeStats
 			genericStats.Add(new StatItem("Unique pwds", passwords.Count));
 			genericStats.Add(new StatItem("% of unique pwds", (passwords.Count/(float) totalNumber)*100));
 			genericStats.Add(new StatItem("Average length", (totalLength / (float) passwords.Count)));
+			genericStats.Add(new StatItem("Percentage of entries with an URL", (entriesWithURL / (float) totalNumber)*100));
 			
-			// if 0, we didn't see have any password
+			// if 0, we didn't see any password
 			if (longestLength > 0) {
 				qualityStats.Add(new ExtendedStatItem("Shortest password", shortestLength, shortestEntry));
 				qualityStats.Add(new ExtendedStatItem("Longest password", longestLength, longestEntry));
