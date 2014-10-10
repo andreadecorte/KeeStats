@@ -31,8 +31,8 @@ namespace KeeStats.test
 	public class StatComputerTest
 	{
 		KeePassLib.PwDatabase _db = null;
-		int normalStatsCount = 7;
-		int qualityStatsCount = 2;
+		const int normalStatsCount = 8;
+		const int qualityStatsCount = 2;
 		
 		[TestFixtureSetUp]
 		public void SetUpTests()
@@ -79,7 +79,7 @@ namespace KeeStats.test
 		}
 		
 		/// <summary>
-		/// An empty group
+		/// Homebanking is an empty group
 		/// </summary>
 		[Test]
 		public void TestEmptyGroup()
@@ -126,7 +126,7 @@ namespace KeeStats.test
 		}
 
 		/// <summary>
-		/// Group networking has 3 entries, 2 has the same password
+		/// Group Network has 3 entries, 2 has the same password
 		/// </summary>
 		[Test]
 		public void TestUniquePasswords()
@@ -136,7 +136,7 @@ namespace KeeStats.test
 			
 			PwObjectList<PwGroup> list = _db.RootGroup.GetGroups(true);
 			foreach (PwGroup pwgroup in list) {
-				if (pwgroup.Name == "Networking") {
+				if (pwgroup.Name == "Network") {
 					bool result = StatComputer.ComputeStats(pwgroup, ref statsList, ref qualityStats, true);
 					Assert.IsTrue(result);
 					
@@ -156,6 +156,9 @@ namespace KeeStats.test
 					Assert.AreEqual("Percentage of entries with an URL", statsList[6].Name);
 					Assert.AreEqual(0, statsList[6].Value);
 					
+					Assert.AreEqual("Referenced passwords", statsList[7].Name);
+					Assert.AreEqual(0, statsList[7].Value);
+					
 					Assert.AreEqual("Shortest password", qualityStats[0].Name);
 					Assert.AreEqual(3, qualityStats[0].Value);
 					
@@ -166,6 +169,35 @@ namespace KeeStats.test
 				}
 			}
 		}
-		// TODO test windows? (ex. changed checkbox)
+		
+		
+		/// <summary>
+		/// Group Windows has 1 entry REFTEST whose password refers to Network/test1 password
+		/// </summary>
+		[Test]
+		public void TestReferencedPasswords()
+		{
+			var statsList = new List<StatItem>();
+			var qualityStats = new List<ExtendedStatItem>();
+			
+			PwObjectList<PwGroup> list = _db.RootGroup.GetGroups(true);
+			foreach (PwGroup pwgroup in list) {
+				if (pwgroup.Name == "Windows") {
+					bool result = StatComputer.ComputeStats(pwgroup, ref statsList, ref qualityStats, true);
+					
+					Assert.IsTrue(result);
+					
+					Assert.AreEqual(normalStatsCount, statsList.Count);
+					Assert.AreEqual(0, qualityStats.Count);
+					
+					Assert.AreEqual("Count", statsList[0].Name);
+					Assert.AreEqual(1.0, statsList[0].Value);
+					
+					Assert.AreEqual("Referenced passwords", statsList[7].Name);
+					Assert.AreEqual(1, statsList[7].Value);
+				}
+			}
+		}
+		
 	}
 }

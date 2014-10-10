@@ -62,6 +62,10 @@ namespace KeeStats
 			int emptyPasswords = 0;
 			int totalLength = 0;
 			int entriesWithURL = 0;
+			int referencedPasswords = 0;
+			
+			// Matches pattern {REF:   }, which should be reference to other fields
+			string refPattern = "^\\{REF:.*\\}$";
 			
 			Dictionary<string, PwEntry> passwords = new Dictionary<string, PwEntry>();
 			foreach (PwEntry aPasswordObject in group.GetEntries(isRecursive)) {
@@ -76,6 +80,10 @@ namespace KeeStats
 					// special case for empty passwords
 					if (thePasswordStringLength == 0) {
 						emptyPasswords++;
+						continue;
+					}
+					if (System.Text.RegularExpressions.Regex.IsMatch(thePasswordString, refPattern)) {
+						referencedPasswords++;
 						continue;
 					}
 					
@@ -95,7 +103,6 @@ namespace KeeStats
 					
 				} catch(ArgumentException) {
 					// We want only unique passwords, so don't do anything
-					// Code coverage ignores this for some reason...
 				}
 			}
 			
@@ -104,6 +111,7 @@ namespace KeeStats
 			genericStats.Add(new StatItem("% of unique pwds", (passwords.Count/(float) totalNumber)*100));
 			genericStats.Add(new StatItem("Average length", (totalLength / (float) passwords.Count)));
 			genericStats.Add(new StatItem("Percentage of entries with an URL", (entriesWithURL / (float) totalNumber)*100));
+			genericStats.Add(new StatItem("Referenced passwords", referencedPasswords));
 			
 			// if 0, we didn't see any password
 			if (longestLength > 0) {
