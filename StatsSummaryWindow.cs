@@ -17,7 +17,6 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 using System;
-using System.Diagnostics;
 using System.Windows.Forms;
 
 using System.Collections.Generic;
@@ -61,6 +60,7 @@ namespace KeeStats
 			qualityStatsView.ReadOnly = true;
 			
 			// Disable if no items
+			generalStatsView.Enabled = items.Count != 0;
 			qualityStatsView.Enabled = extended_items.Count != 0;
 			
 			// Hide item object column
@@ -126,6 +126,7 @@ namespace KeeStats
 			qualityStatsView.DataSource = extended_items;
 			
 			// Disable if no items
+			generalStatsView.Enabled = items.Count != 0;
 			qualityStatsView.Enabled = extended_items.Count != 0;
 		}
 	}
