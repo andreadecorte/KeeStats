@@ -47,6 +47,11 @@ namespace KeeStats
 	/// </summary>
 	public class ExtendedStatItem : StatItem
 	{
+		public ExtendedStatItem(string name, float value) : base(name, value)
+		{
+			_item = null;
+		}
+		
 		public ExtendedStatItem(string name, float value, PwEntry item) : base(name, value)
 		{
 			_item = item;

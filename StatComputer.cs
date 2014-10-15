@@ -40,7 +40,12 @@ namespace KeeStats
 		{
 			// average length for unique passwords + distribution
 			// most common?
-			// including only numbers, alpha, uppercase, special chars
+			// lower upper numbers special_chars
+			// 4 (single)
+			// 4*3*2*1 (double)
+			// (1+1 + 1 )
+			// 1
+			// 32 possibilità, unicita all'interno di ogni gruppo
 			// Average of last access ?
 			uint totalNumber = group.GetEntriesCount(isRecursive);
 			
@@ -63,9 +68,19 @@ namespace KeeStats
 			int totalLength = 0;
 			int entriesWithURL = 0;
 			int referencedPasswords = 0;
+			int lowercaseOnlyPasswords = 0;
+			int uppercaseOnlyPasswords = 0;
+			int numericOnlyPasswords = 0;
+			int alphanumericOnlyPasswords = 0;
+			int notAlphanumericOnlyPasswords = 0;
 			
 			// Matches pattern {REF:   }, which should be reference to other fields
-			string refPattern = "^\\{REF:.*\\}$";
+			const string refPattern = "^\\{REF:.*\\}$";
+			const string lowercaseOnlyPattern = "^[a-z]+$";
+			const string uppercaseOnlyPattern = "^[A-Z]+$";
+			const string numericOnlyPattern = "^[0-9]+$";
+			const string alphanumericOnlyPattern = "^(?=.*[A-Za-z])(?=.*[0-9])[A-Za-z0-9]+$";
+			const string notAlphanumericOnlyPattern = "^[^A-Za-z0-9]+$";
 			
 			Dictionary<string, PwEntry> passwords = new Dictionary<string, PwEntry>();
 			foreach (PwEntry aPasswordObject in group.GetEntries(isRecursive)) {
@@ -85,6 +100,20 @@ namespace KeeStats
 					if (System.Text.RegularExpressions.Regex.IsMatch(thePasswordString, refPattern)) {
 						referencedPasswords++;
 						continue;
+					}
+					
+					// quality stats on password content. Currently exlusive content. Doesn't scale currently
+					if (System.Text.RegularExpressions.Regex.IsMatch(thePasswordString, lowercaseOnlyPattern)) {
+						// only lowercase
+						lowercaseOnlyPasswords++;
+					} else if (System.Text.RegularExpressions.Regex.IsMatch(thePasswordString, uppercaseOnlyPattern)) {
+						uppercaseOnlyPasswords++;
+					} else if (System.Text.RegularExpressions.Regex.IsMatch(thePasswordString, numericOnlyPattern)) {
+						numericOnlyPasswords++;
+					} else if (System.Text.RegularExpressions.Regex.IsMatch(thePasswordString, alphanumericOnlyPattern)) {
+						alphanumericOnlyPasswords++;
+					} else if (System.Text.RegularExpressions.Regex.IsMatch(thePasswordString, notAlphanumericOnlyPattern)) {
+						notAlphanumericOnlyPasswords++;
 					}
 					
 					passwords.Add(thePasswordString, aPasswordObject);
@@ -117,6 +146,12 @@ namespace KeeStats
 			if (longestLength > 0) {
 				qualityStats.Add(new ExtendedStatItem("Shortest password", shortestLength, shortestEntry));
 				qualityStats.Add(new ExtendedStatItem("Longest password", longestLength, longestEntry));
+				
+				qualityStats.Add(new ExtendedStatItem("Lowercase only passwords", lowercaseOnlyPasswords));
+				qualityStats.Add(new ExtendedStatItem("Uppercase only passwords", uppercaseOnlyPasswords));
+				qualityStats.Add(new ExtendedStatItem("Numeric only passwords", numericOnlyPasswords));
+				qualityStats.Add(new ExtendedStatItem("Alphanumeric only passwords", alphanumericOnlyPasswords));
+				qualityStats.Add(new ExtendedStatItem("Not alphanumeric passwords", notAlphanumericOnlyPasswords));
 			}
 			
 			return true;

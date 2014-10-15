@@ -24,6 +24,7 @@ using NUnit.Framework;
 
 using KeePassLib.Keys;
 using KeePassLib.Serialization;
+using KeePassLib.Security;
 
 namespace KeeStats.test
 {
@@ -32,13 +33,13 @@ namespace KeeStats.test
 	{
 		KeePassLib.PwDatabase _db = null;
 		const int normalStatsCount = 8;
-		const int qualityStatsCount = 2;
+		const int qualityStatsCount = 7;
 		
 		[TestFixtureSetUp]
 		public void SetUpTests()
 		{
-			var dbpath = "../../test/test.kdbx";
-			var masterpw = "1234";
+			const string dbpath = "../../test/test.kdbx";
+			const string masterpw = "1234";
 
 			var ioConnInfo = new IOConnectionInfo { Path = dbpath };
 			var compKey = new CompositeKey();
@@ -191,12 +192,98 @@ namespace KeeStats.test
 					Assert.AreEqual(0, qualityStats.Count);
 					
 					Assert.AreEqual("Count", statsList[0].Name);
-					Assert.AreEqual(1.0, statsList[0].Value);
+					Assert.AreEqual(1, statsList[0].Value);
 					
 					Assert.AreEqual("Referenced passwords", statsList[7].Name);
 					Assert.AreEqual(1, statsList[7].Value);
 				}
 			}
+		}
+		
+		[Test]
+		public void TestQualityOfPasswords()
+		{
+			// Create group and pass to the calculate method
+			PwGroup subgroup = new PwGroup(true, true, "Quality test", new PwIcon());
+			PwEntry entry1 = new PwEntry(true, true);
+			entry1.Strings.Set(PwDefs.TitleField, new ProtectedString(false, "Numeric"));
+			entry1.Strings.Set(PwDefs.PasswordField, new ProtectedString(false, "111"));
+			subgroup.AddEntry(entry1, true);
+			
+			PwEntry entry2 = new PwEntry(true, true);
+			entry2.Strings.Set(PwDefs.TitleField, new ProtectedString(false, "AlphaNumeric"));
+			entry2.Strings.Set(PwDefs.PasswordField, new ProtectedString(false, "111ae"));
+			subgroup.AddEntry(entry2, true);
+			
+			PwEntry entry3 = new PwEntry(true, true);
+			entry3.Strings.Set(PwDefs.TitleField, new ProtectedString(false, "Special chars"));
+			entry3.Strings.Set(PwDefs.PasswordField, new ProtectedString(false, "$&**"));
+			subgroup.AddEntry(entry3, true);
+			
+			PwEntry entry4 = new PwEntry(true, true);
+			entry4.Strings.Set(PwDefs.TitleField, new ProtectedString(false, "Upper"));
+			entry4.Strings.Set(PwDefs.PasswordField, new ProtectedString(false, "AAAA"));
+			subgroup.AddEntry(entry4, true);
+			
+			
+			PwEntry entry5 = new PwEntry(true, true);
+			entry5.Strings.Set(PwDefs.TitleField, new ProtectedString(false, "Lower"));
+			entry5.Strings.Set(PwDefs.PasswordField, new ProtectedString(false, "bbbb"));
+			subgroup.AddEntry(entry5, true);
+			
+			PwEntry entry6 = new PwEntry(true, true);
+			entry6.Strings.Set(PwDefs.TitleField, new ProtectedString(false, "Upperlower"));
+			entry6.Strings.Set(PwDefs.PasswordField, new ProtectedString(false, "bbbbAAA"));
+			subgroup.AddEntry(entry6, true);
+			//_db.RootGroup.AddGroup(subgroup, true);
+			
+			var statsList = new List<StatItem>();
+			var qualityStats = new List<ExtendedStatItem>();
+			
+			bool result = StatComputer.ComputeStats(subgroup, ref statsList, ref qualityStats, true);
+			
+			Assert.IsTrue(result);
+			
+			Assert.AreEqual(normalStatsCount, statsList.Count);
+			Assert.AreEqual(qualityStatsCount, qualityStats.Count);
+			
+			Assert.AreEqual("Count", statsList[0].Name);
+			Assert.AreEqual(6, statsList[0].Value);
+			
+			
+			Assert.AreEqual("Unique pwds", statsList[3].Name);
+			Assert.AreEqual(6, statsList[3].Value);  // unique pwds
+			Assert.AreEqual(0, statsList[2].Value);  // empty pwds
+			
+			Assert.AreEqual("Average length", statsList[5].Name);
+			Assert.AreEqual(4.5, statsList[5].Value);
+			
+			Assert.AreEqual("Percentage of entries with an URL", statsList[6].Name);
+			Assert.AreEqual(0, statsList[6].Value);
+			
+			Assert.AreEqual("Referenced passwords", statsList[7].Name);
+			Assert.AreEqual(0, statsList[7].Value);
+			
+			Assert.AreEqual("Shortest password", qualityStats[0].Name);
+			Assert.AreEqual(3, qualityStats[0].Value);
+			
+			Assert.AreEqual("Longest password", qualityStats[1].Name);
+			Assert.AreEqual(7, qualityStats[1].Value);
+			
+			Assert.AreEqual("Lowercase only passwords", qualityStats[2].Name);
+			Assert.AreEqual(1, qualityStats[2].Value);
+			
+			Assert.AreEqual("Uppercase only passwords", qualityStats[3].Name);
+			Assert.AreEqual(1, qualityStats[3].Value);
+			
+			Assert.AreEqual("Numeric only passwords", qualityStats[4].Name);
+			Assert.AreEqual(1, qualityStats[4].Value);
+			
+			Assert.AreEqual("Alphanumeric only passwords", qualityStats[5].Name);
+			Assert.AreEqual(1, qualityStats[5].Value);
+			
+			Assert.AreEqual("Not alphanumeric passwords", qualityStats[6].Name);
+			Assert.AreEqual(1, qualityStats[6].Value);
 		}
 		
 	}

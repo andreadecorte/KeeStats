@@ -96,12 +96,17 @@ namespace KeeStats
 
 			PwEntry entry = qualityStatsView.Rows[e.RowIndex].Cells["Item"].Value as PwEntry;
 			
+			if (entry == null) {
+				// For example a stat without an entry associated
+				return;
+			}
+			
 			try {
 				PwEntryForm aForm = new PwEntryForm();
 				aForm.InitEx(entry, PwEditMode.ViewReadOnlyEntry, _database, _icons, false, false);
 				aForm.Show();
 			} catch (Exception ex) {
-				MessageBox.Show("Error while loading the edit window " + ex.Message, "KeeStats", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show("Error while loading the edit window: " + ex.Message, "KeeStats", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 
 			// TODO fix the Cancel button not working despite adding the event
@@ -113,9 +118,8 @@ namespace KeeStats
 			List<StatItem> items = new List<StatItem>();
 			List<ExtendedStatItem> extended_items = new List<ExtendedStatItem>();
 			
-			// Recompute stats. This should always be true (because otherwise the window wouldn't be opened)
+			// Recompute stats
 			var result = StatComputer.ComputeStats(_group, ref items, ref extended_items, cb.Checked);
-			Debug.Assert(result);
 			
 			// Now update the data source so the view is updated
 			generalStatsView.DataSource = items;
