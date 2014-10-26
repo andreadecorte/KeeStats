@@ -132,6 +132,7 @@ namespace KeeStats
 					
 				} catch(ArgumentException) {
 					// We want only unique passwords, so don't do anything
+					continue;
 				}
 			}
 			

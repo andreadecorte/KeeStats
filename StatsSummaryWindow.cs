@@ -27,7 +27,7 @@ using KeePass.Forms;
 namespace KeeStats
 {
 	/// <summary>
-	/// Description of StatsSummaryWindow.
+	/// Show the computed statistics in two datagridview
 	/// </summary>
 	public partial class StatsSummaryWindow : Form
 	{
@@ -65,13 +65,11 @@ namespace KeeStats
 			
 			// Hide item object column
 			qualityStatsView.Columns["Item"].Visible = false;
+			// Try to hide it on Mono (Visible properties not respected)
+			qualityStatsView.Columns["Item"].Width = 0;
+			qualityStatsView.Refresh();
+			
 			qualityStatsView.CellClick += new DataGridViewCellEventHandler(qualityStatsView_CellClick);
-//			DataGridViewButtonColumn btn = new DataGridViewButtonColumn();
-//			m_statsView2.Columns.Add(btn);
-//			btn.HeaderText = "Click Data";
-//			btn.Text = "Click Here";
-//			btn.Name = "btn";
-//			btn.UseColumnTextForButtonValue = true;
 			
 			recursiveSearch.Checked = true;
 			recursiveSearch.CheckedChanged += HandleCheckedChanged;
