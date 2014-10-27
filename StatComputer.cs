@@ -86,7 +86,14 @@ namespace KeeStats
 			const string alphanumericOnlyPattern = "^(?=.*[A-Za-z])(?=.*[0-9])[A-Za-z0-9]+$";
 			const string notAlphanumericOnlyPattern = "^[^A-Za-z0-9]+$";
 			
-			Dictionary<string, PwEntry> passwords = new Dictionary<string, PwEntry>();
+			var refRegex = new System.Text.RegularExpressions.Regex(refPattern);
+			var lowercaseOnlyRegex = new System.Text.RegularExpressions.Regex(lowercaseOnlyPattern);
+			var uppercaseOnlyRegex = new System.Text.RegularExpressions.Regex(uppercaseOnlyPattern);
+			var numericOnlyRegex = new System.Text.RegularExpressions.Regex(numericOnlyPattern);
+			var alphanumericOnlyRegex = new System.Text.RegularExpressions.Regex(alphanumericOnlyPattern);
+			var notAlphanumericOnlyRegex = new System.Text.RegularExpressions.Regex(notAlphanumericOnlyPattern);
+			
+			var passwords = new Dictionary<string, PwEntry>();
 			foreach (PwEntry aPasswordObject in group.GetEntries(isRecursive)) {
 				try {
 					
@@ -105,22 +112,22 @@ namespace KeeStats
 						emptyPasswords++;
 						continue;
 					}
-					if (System.Text.RegularExpressions.Regex.IsMatch(thePasswordString, refPattern)) {
+					if (refRegex.IsMatch(thePasswordString)) {
 						referencedPasswords++;
 						continue;
 					}
 					
 					// quality stats on password content. Currently exlusive content. Doesn't scale currently
-					if (System.Text.RegularExpressions.Regex.IsMatch(thePasswordString, lowercaseOnlyPattern)) {
+					if (lowercaseOnlyRegex.IsMatch(thePasswordString)) {
 						// only lowercase
 						lowercaseOnlyPasswords++;
-					} else if (System.Text.RegularExpressions.Regex.IsMatch(thePasswordString, uppercaseOnlyPattern)) {
+					} else if (uppercaseOnlyRegex.IsMatch(thePasswordString)) {
 						uppercaseOnlyPasswords++;
-					} else if (System.Text.RegularExpressions.Regex.IsMatch(thePasswordString, numericOnlyPattern)) {
+					} else if (numericOnlyRegex.IsMatch(thePasswordString)) {
 						numericOnlyPasswords++;
-					} else if (System.Text.RegularExpressions.Regex.IsMatch(thePasswordString, alphanumericOnlyPattern)) {
+					} else if (alphanumericOnlyRegex.IsMatch(thePasswordString)) {
 						alphanumericOnlyPasswords++;
-					} else if (System.Text.RegularExpressions.Regex.IsMatch(thePasswordString, notAlphanumericOnlyPattern)) {
+					} else if (notAlphanumericOnlyRegex.IsMatch(thePasswordString)) {
 						notAlphanumericOnlyPasswords++;
 					}
 					

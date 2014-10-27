@@ -66,7 +66,7 @@ namespace KeeStats
 			tsMenu.Add(m_tsSeparator);
 			
 			m_tsmiStats = new ToolStripMenuItem();
-			m_tsmiStats.Text = "View stats...";
+			m_tsmiStats.Text = "&View stats...";
 			tsMenu.Add(m_tsmiStats);
 			m_tsmiStats.Click += OnMenuViewStats;
 			
