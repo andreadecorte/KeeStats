@@ -28,6 +28,9 @@ namespace KeeStats
 	/// </summary>
 	public static class StatComputer
 	{
+		// How many days maximum since the last access date to be considered recent
+		const int DAYS_RECENT_LAST_ACCESS_ENTRIES = 30;
+
 		/// <summary>
 		/// Computes the statistics
 		/// </summary>
@@ -63,6 +66,7 @@ namespace KeeStats
 			int longestLength = 0;
 			string longestPass = "";
 			PwEntry longestEntry = null;
+			int passwordsAccessedRecently = 0;
 			
 			int emptyPasswords = 0;
 			int totalLength = 0;
@@ -88,6 +92,10 @@ namespace KeeStats
 					
 					if (aPasswordObject.Strings.ReadSafe(PwDefs.UrlField).Length > 0) {
 						entriesWithURL++;
+					}
+					// Recent access = less than DAYS_RECENT_LAST_ACCESS_ENTRIES days ago
+					if (aPasswordObject.LastAccessTime.AddDays(DAYS_RECENT_LAST_ACCESS_ENTRIES) >= DateTime.Now) {
+						passwordsAccessedRecently++;
 					}
 					
 					string thePasswordString = aPasswordObject.Strings.ReadSafe(PwDefs.PasswordField);
@@ -142,6 +150,7 @@ namespace KeeStats
 			genericStats.Add(new StatItem("Average length", (totalLength / (float) passwords.Count)));
 			genericStats.Add(new StatItem("Percentage of entries with an URL", (entriesWithURL / (float) totalNumber)*100));
 			genericStats.Add(new StatItem("Referenced passwords", referencedPasswords));
+			genericStats.Add(new StatItem("% of passwords accessed recently", (passwordsAccessedRecently/(float) totalNumber)*100));
 			
 			// if 0, we didn't see any password
 			if (longestLength > 0) {

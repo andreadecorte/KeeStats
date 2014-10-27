@@ -27,7 +27,7 @@ using KeePass.Forms;
 namespace KeeStats
 {
 	/// <summary>
-	/// Show the computed statistics in two datagridview
+	/// Show the computed statistics in two datagridviews
 	/// </summary>
 	public partial class StatsSummaryWindow : Form
 	{

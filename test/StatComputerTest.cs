@@ -32,7 +32,7 @@ namespace KeeStats.test
 	public class StatComputerTest
 	{
 		KeePassLib.PwDatabase _db = null;
-		const int normalStatsCount = 8;
+		const int normalStatsCount = 9;
 		const int qualityStatsCount = 7;
 		
 		[TestFixtureSetUp]
@@ -284,6 +284,54 @@ namespace KeeStats.test
 			
 			Assert.AreEqual("Not alphanumeric passwords", qualityStats[6].Name);
 			Assert.AreEqual(1, qualityStats[6].Value);
+		}
+		
+		[Test]
+		public void TestRecentPasswords()
+		{
+			// Create group and pass to the calculate method
+			PwGroup subgroup = new PwGroup(true, true, "Time test", new PwIcon());
+			PwEntry entry1 = new PwEntry(true, true);
+			entry1.LastAccessTime = DateTime.Now.Subtract(TimeSpan.FromDays(40));
+			entry1.Strings.Set(PwDefs.TitleField, new ProtectedString(false, "Numeric"));
+			entry1.Strings.Set(PwDefs.PasswordField, new ProtectedString(false, "111"));
+			subgroup.AddEntry(entry1, true);
+			
+			PwEntry entry2 = new PwEntry(true, true);
+			entry2.LastAccessTime = DateTime.Now.Subtract(TimeSpan.FromDays(20));
+			entry2.Strings.Set(PwDefs.TitleField, new ProtectedString(false, "AlphaNumeric"));
+			entry2.Strings.Set(PwDefs.PasswordField, new ProtectedString(false, "111ae"));
+			subgroup.AddEntry(entry2, true);
+			
+			PwEntry entry3 = new PwEntry(true, true);
+			entry3.LastAccessTime = DateTime.Now;
+			entry3.Strings.Set(PwDefs.TitleField, new ProtectedString(false, "Special chars"));
+			entry3.Strings.Set(PwDefs.PasswordField, new ProtectedString(false, "$&**"));
+			subgroup.AddEntry(entry3, true);
+			
+			PwEntry entry4 = new PwEntry(true, true);
+			entry4.LastAccessTime = DateTime.Now.Subtract(TimeSpan.FromDays(300));
+			entry4.Strings.Set(PwDefs.TitleField, new ProtectedString(false, "Upper"));
+			entry4.Strings.Set(PwDefs.PasswordField, new ProtectedString(false, "AAAA"));
+			subgroup.AddEntry(entry4, true);
+			
+			var statsList = new List<StatItem>();
+			var qualityStats = new List<ExtendedStatItem>();
+			
+			bool result = StatComputer.ComputeStats(subgroup, ref statsList, ref qualityStats, true);
+			Assert.IsTrue(result);
+			
+			Assert.AreEqual(normalStatsCount, statsList.Count);
+			Assert.AreEqual(qualityStatsCount, qualityStats.Count);
+			
+			Assert.AreEqual(normalStatsCount, statsList.Count);
+			Assert.AreEqual(qualityStatsCount, qualityStats.Count);
+			
+			Assert.AreEqual("Count", statsList[0].Name);
+			Assert.AreEqual(4, statsList[0].Value);
+			
+			Assert.AreEqual("% of passwords accessed recently", statsList[8].Name);
+			Assert.AreEqual(50, statsList[8].Value);			
 		}
 		
 	}

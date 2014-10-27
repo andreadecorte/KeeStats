@@ -11,6 +11,12 @@ The plugin depends on:
 * KeePass (of course :-)). It should work will all recent 2.x versions
 * NUnit for unit tests
 
+Mono
+------
+
+It should work fine with Mono. Tested on ArchLinux with Mono 3.10.
+A visual glitch is listed under Known Issues section.
+
 List of computed statistics
 -----------
 
@@ -22,6 +28,7 @@ The current list, I'm still adding them, please contact me if you have something
 * average length for unique passwords
 * Number of entries with a filled URL field
 * Number of referenced passwords (REF)
+* Entries last accessed less than 30 days ago
 
 Quality stats:
 * shortest password
@@ -40,6 +47,7 @@ Allow viewing multiple passwords (e.g. all duplicated ones)
 KNOWN ISSUES
 ------------
 Edit entry Cancel button not working
+Mono: quality stats tab shows a column which should be hidden
 
 Unit tests
 ------------
